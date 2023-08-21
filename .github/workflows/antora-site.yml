@@ -1,10 +1,10 @@
 name: Antora Site
-run-name: ${{ format('{0} for spring-data-{1} ({2})', github.workflow, github.event.inputs.project, github.event.inputs.build-refname || 'all') }}
+run-name: ${{ format('{0} for spring-data-{1} ({2})', github.workflow, github.event.inputs.module, github.event.inputs.build-refname || 'all') }}
 on:
   workflow_dispatch:
     inputs:
-      project:
-        description: Enter Spring Data project suffix to build (e.g., commons, jpa).
+      module:
+        description: Enter Spring Data module suffix to build (e.g., commons, jpa).
         required: true
       build-refname:
         description: Enter git refname to build (e.g., 5.7.x).
@@ -44,17 +44,17 @@ jobs:
     - name: Set up refname build
       if: github.event.inputs.build-refname
       run: |
-        git fetch --depth 1 https://github.com/spring-projects/spring-data-${{ github.event.inputs.project }} ${{ github.event.inputs.build-refname }}
+        git fetch --depth 1 https://github.com/spring-projects/spring-data-${{ github.event.inputs.module }} ${{ github.event.inputs.build-refname }}
         export BUILD_REFNAME=${{ github.event.inputs.build-refname }}
         echo "BUILD_REFNAME=$BUILD_REFNAME" >> $GITHUB_ENV
         export BUILD_VERSION=$(git cat-file --textconv FETCH_HEAD:pom.xml | python3 -c "import xml.etree.ElementTree as xml; from sys import stdin; print(xml.parse(stdin).getroot().find('{http://maven.apache.org/POM/4.0.0}version').text)")
         echo BUILD_VERSION=$BUILD_VERSION >> $GITHUB_ENV
     - name: Run Antora
-      run: ./mvnw -B antora -Dantora.playbook=playbooks/${{ github.event.inputs.project }}.yml
+      run: ./mvnw -B antora -Dantora.playbook=playbooks/${{ github.event.inputs.module }}.yml
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
-          name: antora-site-${{ github.event.inputs.project }}
+          name: antora-site-${{ github.event.inputs.module }}
           path: target/antora/site
           retention-days: 5
 #    - name: Publish Docs
