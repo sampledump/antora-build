@@ -1,0 +1,57 @@
+name: Deploy Docs
+run-name: ${{ format('{0} {1} ({2})', github.workflow, github.event.inputs.project, github.event.inputs.build-refname || 'all') }}
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Enter Spring Data project suffix to build (e.g., commons, jpa).
+        required: true
+      build-refname:
+        description: Enter git refname to build (e.g., 5.7.x).
+        required: true
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.repository_owner == 'spring-projects'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 5
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Set up refname build
+      if: github.event.inputs.build-refname
+      run: |
+        git fetch --depth 1 https://github.com/spring-data-${{ github.event.inputs.project }} ${{ github.event.inputs.build-refname }}
+        export BUILD_REFNAME=${{ github.event.inputs.build-refname }}
+        echo "BUILD_REFNAME=$BUILD_REFNAME" >> $GITHUB_ENV
+        export BUILD_VERSION=$(git cat-file --textconv FETCH_HEAD:pom.xml | python3 -c "import xml.etree.ElementTree as xml; from sys import stdin; print(xml.parse(stdin).getroot().find('{http://maven.apache.org/POM/4.0.0}version').text)")
+        echo BUILD_VERSION=$BUILD_VERSION >> $GITHUB_ENV
+    - name: Run Antora
+      run: ./mvnw -B antora -Dantora.playbook=playbooks/${{ github.event.inputs.project }}/antora-playbook.yml
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: output/test/code-coverage.html
+#    - name: Publish Docs
+#      uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.11
+#      with:
+#        docs-username: ${{ secrets.DOCS_USERNAME }}
+#        docs-host: ${{ secrets.DOCS_HOST }}
+#        docs-ssh-key: ${{ secrets.DOCS_SSH_KEY }}
+#        docs-ssh-host-key: ${{ secrets.DOCS_SSH_HOST_KEY }}
+#        site-path: target/antora/site
+#    - name: Bust Cloudflare Cache
+#      uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.11
+#      with:
+#        context-root: spring-data-commons
+#        cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+#        cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
+
