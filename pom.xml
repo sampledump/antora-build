@@ -11,7 +11,7 @@
 
 	<properties>
 		<io.spring.maven.antora-version>0.0.3</io.spring.maven.antora-version>
-		<antora.playbook>antora-playbook.yml</antora.playbook>
+		<antora.playbook>playbooks/${spring-data.module}.yml</antora.playbook>
 	</properties>
 
 	<build>
@@ -31,28 +31,11 @@
 					<environment>
 						<ALGOLIA_API_KEY>9d489079e5ec46dbb238909fee5c9c29</ALGOLIA_API_KEY>
 						<ALGOLIA_APP_ID>WB1FQYI187</ALGOLIA_APP_ID>
-						<ALGOLIA_INDEX_NAME>springdatacommons</ALGOLIA_INDEX_NAME>
+						<ALGOLIA_INDEX_NAME>springdata${spring-data.module}</ALGOLIA_INDEX_NAME>
 					</environment>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>spring-snapshot</id>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-		<repository>
-			<id>spring-milestone</id>
-			<url>https://repo.spring.io/milestone</url>
-		</repository>
-	</repositories>
 
 </project>

@@ -4,19 +4,19 @@ antora:
     - require: '@springio/antora-extensions/latest-version-extension'
     - require: '@springio/antora-extensions/inject-collector-cache-config-extension'
     - '@antora/collector-extension'
-    - './antora/lib/version-fix.js'
+    - 'antora/lib/version-fix.js'
     - '@antora/atlas-extension'
     - require: '@springio/antora-extensions/root-component-extension'
-      root_component_name: 'data-jpa'
+      root_component_name: 'data-commons'
 site:
-  title: Spring Data JPA
-  url: https://docs.spring.io/spring-data-jpa/reference
+  title: Spring Data Commons
+  url: https://docs.spring.io/spring-data-commons/reference
   robots: allow
 git:
   ensure_git_suffix: false
 content:
   sources:
-    - url: https://github.com/spring-projects/spring-data-jpa
+    - url: https://github.com/spring-projects/spring-data-commons
       # Refname matching:
       # https://docs.antora.org/antora/latest/playbook/content-refname-matching/
       branches: [ main, '{3..9}.*({0..9}).x', '!3.0.x', '!3.1.x' ]
@@ -24,7 +24,7 @@ content:
       start_path: src/main/antora
 asciidoc:
   attributes:
-    page-stackoverflow-url: https://stackoverflow.com/tags/spring-data-jpa
+    page-stackoverflow-url: https://stackoverflow.com/tags/spring-data-commons
     page-pagination: ''
     hide-uri-scheme: '@'
     tabs-sync-option: '@'
